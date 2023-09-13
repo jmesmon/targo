@@ -2,7 +2,7 @@ use crate::{cargo_cli::CargoCli, store::TargoStore};
 use camino::Utf8PathBuf;
 use clap::{Parser, Subcommand, ValueHint};
 use color_eyre::{
-    eyre::{bail, WrapErr},
+    eyre::{bail, eyre, WrapErr},
     Result,
 };
 use lexopt::prelude::*;
@@ -206,9 +206,11 @@ impl ParsedCargoArgs {
 }
 
 fn find_targo_store_dir() -> Result<Utf8PathBuf> {
-    let dir = home::cargo_home().wrap_err("unable to determine cargo home dir")?;
+    let dir = directories::ProjectDirs::from("com.github", "sunshowers", "targo")
+        .ok_or_else(|| eyre!("couldn't find project dir"))?;
+    let dir = dir.cache_dir();
     let mut utf8_dir: Utf8PathBuf = dir
-        .clone()
+        .to_owned()
         .try_into()
         .wrap_err_with(|| format!("cargo home `{}` is invalid UTF-8", dir.display()))?;
     utf8_dir.push("targo");
