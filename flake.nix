@@ -12,7 +12,7 @@
         };
       in
       {
-        defaultPackage = with pkgs; (callPackage ./targo.nix {
+        packages.default = with pkgs; (callPackage ./targo.nix {
           inherit rustPlatform;
         });
         formatter = pkgs.nixpkgs-fmt;
